@@ -207,7 +207,40 @@ EOF
 chmod +x $PREFIX/bin/openclaw-local
 
 # ==========================================
-# 9. Bridge Protocol Generation
+# 9. Offline Coding Machine Integration
+# ==========================================
+echo "Installing Edge Computing AI Developers (Aider & OpenClaude)..."
+
+# Python/Aider (Industry standard pair-programmer for LLMs)
+pkg install python -y >/dev/null 2>&1 || true
+pip install aider-chat >/dev/null 2>&1 || true
+
+# Node/OpenClaude Wrapper
+npm install -g @gitlawb/openclaude >/dev/null 2>&1 || true
+
+# Constructing Local Override Launchers
+cat << EOF > $PREFIX/bin/aider-local
+#!/data/data/com.termux/files/usr/bin/bash
+export OPENAI_API_BASE="http://127.0.0.1:8080/v1"
+export OPENAI_API_KEY="local-bypass"
+echo "Initializing Aider linked to local Llama.cpp engine..."
+aider --model openai/local-model "\$@"
+EOF
+chmod +x $PREFIX/bin/aider-local
+
+cat << EOF > $PREFIX/bin/openclaude-local
+#!/data/data/com.termux/files/usr/bin/bash
+export OPENAI_BASE_URL="http://127.0.0.1:8080/v1"
+export OPENAI_API_KEY="local-bypass"
+export ANTHROPIC_API_KEY="local-bypass"
+export ANTHROPIC_BASE_URL="http://127.0.0.1:8080/v1"
+echo "Initializing OpenClaude linked to local Llama.cpp engine..."
+openclaude "\$@"
+EOF
+chmod +x $PREFIX/bin/openclaude-local
+
+# ==========================================
+# 10. Bridge Protocol Generation
 # ==========================================
 echo "Configuring Node.js interaction logic..."
 cd $HOME
@@ -332,7 +365,9 @@ echo ""
 echo "Installation structure successfully resolved."
 echo "Execute the system sequence via the following command:"
 echo "bash ~/start-overlayd.sh"
-echo "Note: The OpenClaw execution environment can be triggered manually via 'openclaw-local'."
-echo ""
+echo "--------------------------------------------------------"
+echo "To execute computer vision autonomously run:    openclaw-local"
+echo "To utilize the phone as a 24/7 coding machine:  aider-local OR openclaude-local"
+echo "--------------------------------------------------------"
 echo "System deployment finished."
 echo "If you found this setup useful, please consider subscribing to 'orailnoor' on YouTube!"
