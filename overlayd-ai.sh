@@ -219,6 +219,17 @@ pip install aider-chat >/dev/null 2>&1 || true
 npm install -g @gitlawb/openclaude >/dev/null 2>&1 || true
 
 # Constructing Local Override Launchers
+mkdir -p ~/.config/openclaude
+cat << EOF > ~/.config/openclaude/config.json
+{
+  "provider": "openai",
+  "openai_api_key": "local-bypass",
+  "openai_base_url": "http://127.0.0.1:8080/v1",
+  "model": "local-model",
+  "onboarding_completed": true
+}
+EOF
+
 cat << EOF > $PREFIX/bin/aider-local
 #!/data/data/com.termux/files/usr/bin/bash
 export OPENAI_API_BASE="http://127.0.0.1:8080/v1"
@@ -342,9 +353,9 @@ echo "Initiating Overlayd-AI Systems..."
 cd ~/llama.cpp
 
 if [ "$MODEL_INDEX" == "1" ]; then
-    ./build/bin/llama-server -m models/${PRIMARY_FILE} --mmproj models/${VISION_FILE} -t 4 -c 4096 --port 8080 > ~/overlayd_server.log 2>&1 &
+    ./build/bin/llama-server -m models/${PRIMARY_FILE} --mmproj models/${VISION_FILE} -t 4 -c 8192 --port 8080 --flash-attn > ~/overlayd_server.log 2>&1 &
 else
-    ./build/bin/llama-server -m models/${PRIMARY_FILE} -t 4 -c 2048 --port 8080 > ~/overlayd_server.log 2>&1 &
+    ./build/bin/llama-server -m models/${PRIMARY_FILE} -t 4 -c 8192 --port 8080 --flash-attn > ~/overlayd_server.log 2>&1 &
 fi
 
 OVERLAYD_PID=\$!
